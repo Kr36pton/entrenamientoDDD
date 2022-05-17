@@ -2,17 +2,15 @@ package co.com.sofkau.entrenamento.curso;
 
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.support.RequestCommand;
+import co.com.sofkau.entrenamiento.curso.CrearCursoUseCase;
 import co.com.sofkau.entrenamiento.curso.commands.CrearCurso;
 import co.com.sofkau.entrenamiento.curso.events.CursoCreado;
 import co.com.sofkau.entrenamiento.curso.values.CursoId;
 import co.com.sofkau.entrenamiento.curso.values.Descripcion;
 import co.com.sofkau.entrenamiento.curso.values.Nombre;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class CrearCursoUseCaseTest {
 

@@ -1,17 +1,16 @@
 package co.com.sofkau.entrenamento.curso;
 
+
 import co.com.sofka.business.generic.UseCaseHandler;
 import co.com.sofka.business.repository.DomainEventRepository;
 import co.com.sofka.business.support.RequestCommand;
 import co.com.sofka.domain.generic.DomainEvent;
-import co.com.sofkau.entrenamiento.curso.AgregarMentoriaUseCase;
-import co.com.sofkau.entrenamiento.curso.commands.AgregarMentoria;
+import co.com.sofkau.entrenamiento.curso.AgregarDirectrizUseCase;
+import co.com.sofkau.entrenamiento.curso.commands.AgregarDirectriz;
 import co.com.sofkau.entrenamiento.curso.events.CursoCreado;
+import co.com.sofkau.entrenamiento.curso.events.DirectrizAgregadaAMentoria;
 import co.com.sofkau.entrenamiento.curso.events.MentoriaCreada;
-import co.com.sofkau.entrenamiento.curso.values.CursoId;
-import co.com.sofkau.entrenamiento.curso.values.Descripcion;
-import co.com.sofkau.entrenamiento.curso.values.Fecha;
-import co.com.sofkau.entrenamiento.curso.values.Nombre;
+import co.com.sofkau.entrenamiento.curso.values.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,49 +24,61 @@ import java.util.List;
 
 import static org.mockito.Mockito.when;
 
-
 @ExtendWith(MockitoExtension.class)
-class AgregarMentoriaUseCaseTest {
+class AgregarDirectrizUseCaseTest {
 
     @InjectMocks
-    private AgregarMentoriaUseCase useCase;
+    private AgregarDirectrizUseCase useCase;
 
     @Mock
     private DomainEventRepository repository;
 
     @Test
-    void agregarUnaMentoriaHappyPass(){
+    void AgregarDirectrizUse() {
         //arrange
-        CursoId coursoId = CursoId.of("ddddd");
-        Nombre nombre = new Nombre("Aprendiendo de casos de usos");
-        Fecha fecha = new Fecha(LocalDateTime.now(), LocalDate.now());
-        var command = new AgregarMentoria( coursoId,  nombre,  fecha);
+        CursoId coursoId = CursoId.of("xxxx");
+        MentoriaId mentoriaId = MentoriaId.of("use");
+        Directiz directiz = new Directiz("camel case");
+        var command = new AgregarDirectriz(coursoId, mentoriaId ,directiz);
 
-        when(repository.getEventsBy("ddddd")).thenReturn(history());
+        when(repository.getEventsBy("xxxx")).thenReturn(history());
         useCase.addRepository(repository);
         //act
 
         var events = UseCaseHandler.getInstance()
-                .setIdentifyExecutor(command.getCoursoId().value())
+                .setIdentifyExecutor(command.getCursoId().value())
                 .syncExecutor(useCase, new RequestCommand<>(command))
                 .orElseThrow()
                 .getDomainEvents();
 
         //assert
-        var event = (MentoriaCreada)events.get(0);
-        Assertions.assertEquals("Aprendiendo de casos de usos", event.getNombre().value());
+        var event = (DirectrizAgregadaAMentoria) events.get(0);
+        Assertions.assertEquals("camel case", event.getDirectiz().value());
 
     }
 
     private List<DomainEvent> history() {
         Nombre nombre = new Nombre("DDD");
-        Descripcion descripcion = new Descripcion("Curso complementario para el training");
+        Descripcion descripcion = new Descripcion("DDD useCase");
+
         var event = new CursoCreado(
                 nombre,
                 descripcion
+
+
+        );
+
+
+        MentoriaId mentoriaId = MentoriaId.of("use");
+        Nombre nombreMentoria = new Nombre("hola");
+        Fecha fecha = new Fecha(LocalDateTime.now(), LocalDate.now());
+        var event2 = new MentoriaCreada(
+                mentoriaId,
+                nombreMentoria,
+                fecha
         );
         event.setAggregateRootId("xxxxx");
-        return List.of(event);
+        return List.of(event, event2);
     }
 
 }
